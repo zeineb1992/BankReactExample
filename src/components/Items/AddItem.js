@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Card from '../UI/Card';
 import Button from '../UI/Button';
 import classes from './AddItem.module.css';
@@ -7,14 +7,25 @@ import { increment, decrement } from '../../actions/index';
 
 const AddItem = (props) => {
 	const [enteredAmount, setEnteredAmount] = useState('');
+	const balance = useSelector((state) => state.balance);
 	const dispatch = useDispatch();
 	const addAmountHandler = () => {
-		dispatch(increment(enteredAmount));
-		setEnteredAmount('');
+		if (enteredAmount < 0) {
+			alert('Please enter a positive number');
+		} else {
+			dispatch(increment(enteredAmount));
+			setEnteredAmount('');
+		}
 	};
 	const retrieveAmountHandler = () => {
-		dispatch(decrement(enteredAmount));
-		setEnteredAmount('');
+		if (enteredAmount < 0) {
+			alert('Please enter a positive number');
+		} else if (enteredAmount > balance) {
+			alert('You can not withdrawal more than ' + balance);
+		} else {
+			dispatch(decrement(enteredAmount));
+			setEnteredAmount('');
+		}
 	};
 
 	const amountChangeHandler = (event) => {
@@ -26,6 +37,7 @@ const AddItem = (props) => {
 			<div>
 				<label htmlFor="amount">Amount</label>
 				<input
+					min="0"
 					id="amount"
 					type="number"
 					value={enteredAmount}
